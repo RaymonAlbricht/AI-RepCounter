@@ -31,8 +31,7 @@
  *
  *****************************************************************************/
 #include <Arduino.h>
-#include <Arduino_BMI270_BMM150.h>
-#include <Arduino_HS300x.h>
+#include <Arduino_LSM6DS3.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -56,13 +55,6 @@ void setup()
   if (!IMU.begin())
   {
     Serial.println("Failed to initialize IMU!\n");
-    while (1)
-      ;
-  }
-
-  if (!HS300x.begin())
-  {
-    Serial.println("Failed to initialize humidity/temperature sensor!\n");
     while (1)
       ;
   }

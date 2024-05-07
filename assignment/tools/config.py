@@ -15,7 +15,7 @@ from os import makedirs
 # TODO Run this config script to generate the required data folders.
 
 # TODO Set serial communication settings.
-COMPORT = 'COM13'
+COMPORT = 'COM3'
 BAUDRATE = 115200
 
 # TODO Set feature calculation parameters
