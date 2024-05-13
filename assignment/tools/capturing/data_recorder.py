@@ -31,7 +31,7 @@ import serial
 
 # TODO Set the label for the recording here. Alternatively, use the command
 #      line -l option
-LABEL_NAME = 'leftright'
+LABEL_NAME = 'Up Down'
 
 # TODO Set the attribute names from the microcontroller data here.
 #      These attributes are application dependent! The attributes correspond
