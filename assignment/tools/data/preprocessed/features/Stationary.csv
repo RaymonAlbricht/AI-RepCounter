@@ -1,4 +1,4 @@
-label,timestamp1,timestamp2,x_out_fir_rescale_max,x_out_fir_rescale_ptp,y_out_fir_rescale_max,y_out_fir_rescale_ptp,z_out_fir_rescale_max,z_out_fir_rescale_ptp
+label,timestamp1,timestamp2,x_out_fir_rescale_max,x_out_fir_rescale_peak_to_peak,y_out_fir_rescale_max,y_out_fir_rescale_peak_to_peak,z_out_fir_rescale_max,z_out_fir_rescale_peak_to_peak
 Stationary,,,-0.004434108734130859,0.2227361798286438,-0.018647611141204834,0.9136185050010681,0.2865349054336548,0.28114259243011475
 Stationary,,,-0.19431447982788086,0.02724820375442505,-0.9214629530906677,0.013387143611907959,0.2913731336593628,0.013658642768859863
 Stationary,,,-0.19491416215896606,0.020319461822509766,-0.923628568649292,0.010878443717956543,0.2927122116088867,0.015552997589111328

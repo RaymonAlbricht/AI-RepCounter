@@ -1,4 +1,4 @@
-label,timestamp1,timestamp2,x_out_fir_rescale_max,x_out_fir_rescale_ptp,y_out_fir_rescale_max,y_out_fir_rescale_ptp,z_out_fir_rescale_max,z_out_fir_rescale_ptp
+label,timestamp1,timestamp2,x_out_fir_rescale_max,x_out_fir_rescale_peak_to_peak,y_out_fir_rescale_max,y_out_fir_rescale_peak_to_peak,z_out_fir_rescale_max,z_out_fir_rescale_peak_to_peak
 Latpulldown,,,0.09055638313293457,0.6570085287094116,0.9626315832138062,0.9453978538513184,0.5158886909484863,0.5092203617095947
 Latpulldown,,,0.09930896759033203,0.4234384298324585,1.478459119796753,0.6229126453399658,0.4558875560760498,0.342832088470459
 Latpulldown,,,0.04585528373718262,0.4874509572982788,0.9532402753829956,0.42776620388031006,0.4662538766860962,0.40234315395355225

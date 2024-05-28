@@ -23,7 +23,7 @@ import feature_functions as ff
 
 
 # TODO Set feature functions here
-FEATURE_FUNCTIONS = [ff.max, np.ptp]
+FEATURE_FUNCTIONS = [ff.max, ff.peak_to_peak]
 # until now max has the best results var,
 #FEATURE_FUNCTIONS = [ff.raw,ff.min,ff.max,ff.mean,ff.variance,ff.energy,ff.peak_to_peak]
 # FEATURE_FUNCTIONS = [np.mean,np.var,np.median,np.ptp,np.std]

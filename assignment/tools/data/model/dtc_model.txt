@@ -1,51 +1,51 @@
 Decision tree plot: 
 -------------------------------------------------------------------------------
-|--- z_out_fir_rescale_max <= 0.79
-|   |--- z_out_fir_rescale_max <= 0.40
-|   |   |--- y_out_fir_rescale_max <= 0.13
-|   |   |   |--- class: Stationary
-|   |   |--- y_out_fir_rescale_max >  0.13
-|   |   |   |--- class: Bicep curl
-|   |--- z_out_fir_rescale_max >  0.40
-|   |   |--- class: Latpulldown
-|--- z_out_fir_rescale_max >  0.79
-|   |--- class: Chestpress
+|--- y_out_fir_rescale_max <= 0.01
+|   |--- class: Stationary
+|--- y_out_fir_rescale_max >  0.01
+|   |--- z_out_fir_rescale_max <= 0.79
+|   |   |--- y_out_fir_rescale_max <= 0.95
+|   |   |   |--- class: Bicepcurl
+|   |   |--- y_out_fir_rescale_max >  0.95
+|   |   |   |--- class: Latpulldown
+|   |--- z_out_fir_rescale_max >  0.79
+|   |   |--- class: Chestpress
 
 
 Training report: 
 -------------------------------------------------------------------------------
               precision    recall  f1-score   support
 
-  Bicep curl       1.00      1.00      1.00         8
+   Bicepcurl       1.00      1.00      1.00         7
   Chestpress       1.00      1.00      1.00         8
  Latpulldown       1.00      1.00      1.00         7
-  Stationary       1.00      1.00      1.00         7
+  Stationary       1.00      1.00      1.00         8
 
     accuracy                           1.00        30
    macro avg       1.00      1.00      1.00        30
 weighted avg       1.00      1.00      1.00        30
 
-Training accuracy scores (cross-validated over 5 splits): 1.0 1.0 0.8333333333333334 0.8333333333333334 0.8333333333333334
-Average training accuracy: 0.9000 +/- 0.0816
+Training accuracy scores (cross-validated over 5 splits): 0.8333333333333334 0.8333333333333334 1.0 1.0 1.0
+Average training accuracy: 0.9333 +/- 0.0816
 
 Test report: 
 -------------------------------------------------------------------------------
               precision    recall  f1-score   support
 
-  Bicep curl       0.67      1.00      0.80         2
+   Bicepcurl       1.00      1.00      1.00         3
   Chestpress       1.00      1.00      1.00         2
- Latpulldown       1.00      0.67      0.80         3
-  Stationary       1.00      1.00      1.00         3
+ Latpulldown       1.00      1.00      1.00         3
+  Stationary       1.00      1.00      1.00         2
 
-    accuracy                           0.90        10
-   macro avg       0.92      0.92      0.90        10
-weighted avg       0.93      0.90      0.90        10
+    accuracy                           1.00        10
+   macro avg       1.00      1.00      1.00        10
+weighted avg       1.00      1.00      1.00        10
 
-Test accuracy score: 0.9000
+Test accuracy score: 1.0000
 
 Confusion matrix: 
 -------------------------------------------------------------------------------
-[[2 0 0 0]
+[[3 0 0 0]
  [0 2 0 0]
- [1 0 2 0]
- [0 0 0 3]]
+ [0 0 3 0]
+ [0 0 0 2]]

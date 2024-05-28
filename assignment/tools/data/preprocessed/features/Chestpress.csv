@@ -1,4 +1,4 @@
-label,timestamp1,timestamp2,x_out_fir_rescale_max,x_out_fir_rescale_ptp,y_out_fir_rescale_max,y_out_fir_rescale_ptp,z_out_fir_rescale_max,z_out_fir_rescale_ptp
+label,timestamp1,timestamp2,x_out_fir_rescale_max,x_out_fir_rescale_peak_to_peak,y_out_fir_rescale_max,y_out_fir_rescale_peak_to_peak,z_out_fir_rescale_max,z_out_fir_rescale_peak_to_peak
 Chestpress,,,0.2077174186706543,0.308349072933197,0.5725042819976807,0.5600370168685913,1.0218229293823242,1.0044240951538086
 Chestpress,,,0.4491841793060303,0.7536858320236206,0.34509551525115967,0.8554445505142212,1.1356768608093262,0.35620319843292236
 Chestpress,,,0.09916841983795166,0.29161882400512695,0.5112437009811401,0.4755418300628662,1.0944807529449463,0.1979384422302246
