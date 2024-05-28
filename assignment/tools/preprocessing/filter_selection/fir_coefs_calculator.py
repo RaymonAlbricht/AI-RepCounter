@@ -13,9 +13,9 @@ Copyright:  2024 HAN University of Applied Sciences. All Rights Reserved.
 from scipy import signal
 
 # Set FIR filter parameters
-numtaps = 80
-cutoff = 300
-fs = 10000
+numtaps = 8
+cutoff = 2
+fs = 100
 
 # Calculate coefficients
 coefs = signal.firwin(numtaps=numtaps, cutoff=cutoff, fs=fs)
