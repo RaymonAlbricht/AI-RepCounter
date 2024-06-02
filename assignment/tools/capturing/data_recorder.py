@@ -31,12 +31,12 @@ import serial
 
 # TODO Set the label for the recording here. Alternatively, use the command
 #      line -l option
-LABEL_NAME = 'LatPulldown'
+LABEL_NAME = 'Stationary'
 
 # TODO Set the attribute names from the microcontroller data here.
 #      These attributes are application dependent! The attributes correspond
 #      to the comma seperated sensor values transmitted by the microcontroller.
-ATTRIBUTE_NAMES = ['x_out','y_out','z_out']
+ATTRIBUTE_NAMES = ['x_out','y_out','z_out','gyro_x','gyro_y','gyro_z']
 
 # TODO Set number of samples (or press CTRL+C to abort)
 N_SAMPLES = 12000

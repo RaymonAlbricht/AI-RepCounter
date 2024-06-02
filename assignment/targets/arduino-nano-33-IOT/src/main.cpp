@@ -43,18 +43,16 @@
 int n = 0;
 
 float x, y, z;
-float acceleration_mg[3] = {0};
+float gyroX,gyroY,gyroZ;
 float x_buffer[BLOCK_SIZE] = {0};
 float y_buffer[BLOCK_SIZE] = {0};
-float z_buffer[BLOCK_SIZE] = {0};
+float gyro_x_buffer[BLOCK_SIZE] = {0};
 float fir_x[8] = {0};
 float fir_y[8] = {0};
 float fir_z[8] = {0};
+float fir_gyro_x[8] = {0};
 
 float coefs[8] = {0.020179930612355165, 0.06489483637184779, 0.16638970522168856, 0.24853552779410845, 0.24853552779410845, 0.16638970522168856, 0.06489483637184779, 0.020179930612355165};
-
-uint32_t ms1 = 0;
-uint32_t ms2 = 0;
 
 typedef enum
 {
@@ -77,35 +75,36 @@ typedef enum
  *   2  LatPulldown
  *   3  Stationary
  */
-dtc_t dtc(const float y_out_fir_rescale_mean, const float z_out_fir_rescale_min, const float z_out_fir_rescale_max)
+dtc_t dtc(const float gyro_x_fir_rescale_variance, const float x_out_fir_rescale_variance, const float y_out_fir_rescale_mean)
 {
     dtc_t ret;
 
-    if(y_out_fir_rescale_mean <= 0.754241f)
+    if(gyro_x_fir_rescale_variance <= 16.619078f)
     {
-        if(z_out_fir_rescale_min <= -0.606537f)
+        if(y_out_fir_rescale_mean <= 0.609196f)
         {
-             ret = BicepCurl;
-        }
-        else // z_out_fir_rescale_min > -0.606537f
-        {
-            if(z_out_fir_rescale_max <= 0.843368f)
+            if(x_out_fir_rescale_variance <= 0.002862f)
             {
                  ret = Stationary;
             }
-            else // z_out_fir_rescale_max > 0.843368f
+            else // x_out_fir_rescale_variance > 0.002862f
             {
                  ret = ChestPress;
             }
         }
+        else // y_out_fir_rescale_mean > 0.609196f
+        {
+             ret = LatPulldown;
+        }
     }
-    else // y_out_fir_rescale_mean > 0.754241f
+    else // gyro_x_fir_rescale_variance > 16.619078f
     {
-         ret = LatPulldown;
+         ret = BicepCurl;
     }
 
     return ret;
 }
+
 
 
 
@@ -181,10 +180,11 @@ void setup()
 
 void loop()
 {
-    if (IMU.accelerationAvailable())
+    if (IMU.accelerationAvailable() && IMU.gyroscopeAvailable())
     {
         // Set initial timestamp
         IMU.readAcceleration(x, y, z);
+        IMU.readGyroscope(gyroX,gyroY,gyroZ);
 
     // Buffer full?
     if (n >= BLOCK_SIZE)
@@ -192,33 +192,34 @@ void loop()
       
       memmove(&x_buffer[0], &x_buffer[1], sizeof(float) * (BLOCK_SIZE - 1));
       memmove(&y_buffer[0], &y_buffer[1], sizeof(float) * (BLOCK_SIZE - 1));
-      memmove(&z_buffer[0], &z_buffer[1], sizeof(float) * (BLOCK_SIZE - 1));
+      memmove(&gyro_x_buffer[0], &gyro_x_buffer[1], sizeof(float) * (BLOCK_SIZE - 1));
  
       n = BLOCK_SIZE - 1; // Reset counter at the end of the buffer
     }
 
-    y_buffer[n]= y;
-    z_buffer[n]= z;
+    x_buffer[n]= x * 1000;
+    y_buffer[n]= y * 1000;
+    gyro_x_buffer[n] = gyroX * 100;
 
     n++;
 
     if (n >= BLOCK_SIZE){
 
     for(int i = 0; i <= BLOCK_SIZE; i++){
-          //x_buffer[i] = fir(x_buffer[i], coefs, fir_x, NUMBER_OF_COEFS);
+          x_buffer[i] = fir(x_buffer[i], coefs, fir_x, NUMBER_OF_COEFS);
           y_buffer[i] = fir(y_buffer[i], coefs, fir_y, NUMBER_OF_COEFS);
-          z_buffer[i] = fir(z_buffer[i], coefs, fir_z, NUMBER_OF_COEFS);
+          gyro_x_buffer[i] = fir(x_buffer[i], coefs,fir_gyro_x,NUMBER_OF_COEFS);
 
-          //x_buffer[i] = normalize(x_buffer[i],-1,1);
+          x_buffer[i] = normalize(x_buffer[i],-1,1);
           y_buffer[i] = normalize(y_buffer[i],-1,1);
-          z_buffer[i] = normalize(z_buffer[i],-1,1);
+          gyro_x_buffer[i] = normalize(gyro_x_buffer[i],-1,1);
     }
 
           float y_result = mean(y_buffer,BLOCK_SIZE);
-          float z_min_result = min(z_buffer,BLOCK_SIZE);
-          float z_max_result = max(z_buffer,BLOCK_SIZE);
+          float x_result = variance(x_buffer,BLOCK_SIZE);
+          float gyro_result = variance(gyro_x_buffer,BLOCK_SIZE);
 
-           int label = dtc(y_result,z_min_result, z_max_result);
+           int label = dtc(gyro_result,x_result, y_result);
 
         char* label_str;
         // Use the calculated label forfurther processing

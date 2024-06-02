@@ -19,31 +19,31 @@ typedef enum
  *   2  LatPulldown
  *   3  Stationary
  */
-dtc_t dtc(const float y_out_fir_rescale_mean, const float z_out_fir_rescale_min, const float z_out_fir_rescale_max)
+dtc_t dtc(const float gyro_x_fir_rescale_variance, const float x_out_fir_rescale_variance, const float y_out_fir_rescale_mean)
 {
     dtc_t ret;
 
-    if(y_out_fir_rescale_mean <= 0.754241f)
+    if(gyro_x_fir_rescale_variance <= 16.619078f)
     {
-        if(z_out_fir_rescale_min <= -0.606537f)
+        if(y_out_fir_rescale_mean <= 0.609196f)
         {
-             ret = BicepCurl;
-        }
-        else // z_out_fir_rescale_min > -0.606537f
-        {
-            if(z_out_fir_rescale_max <= 0.843368f)
+            if(x_out_fir_rescale_variance <= 0.002862f)
             {
                  ret = Stationary;
             }
-            else // z_out_fir_rescale_max > 0.843368f
+            else // x_out_fir_rescale_variance > 0.002862f
             {
                  ret = ChestPress;
             }
         }
+        else // y_out_fir_rescale_mean > 0.609196f
+        {
+             ret = LatPulldown;
+        }
     }
-    else // y_out_fir_rescale_mean > 0.754241f
+    else // gyro_x_fir_rescale_variance > 16.619078f
     {
-         ret = LatPulldown;
+         ret = BicepCurl;
     }
 
     return ret;

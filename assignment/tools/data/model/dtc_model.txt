@@ -1,15 +1,15 @@
 Decision tree plot: 
 -------------------------------------------------------------------------------
-|--- y_out_fir_rescale_mean <= 0.75
-|   |--- z_out_fir_rescale_min <= -0.61
-|   |   |--- class: BicepCurl
-|   |--- z_out_fir_rescale_min >  -0.61
-|   |   |--- z_out_fir_rescale_max <= 0.84
+|--- gyro_x_fir_rescale_variance <= 16.62
+|   |--- y_out_fir_rescale_mean <= 0.61
+|   |   |--- x_out_fir_rescale_variance <= 0.00
 |   |   |   |--- class: Stationary
-|   |   |--- z_out_fir_rescale_max >  0.84
+|   |   |--- x_out_fir_rescale_variance >  0.00
 |   |   |   |--- class: ChestPress
-|--- y_out_fir_rescale_mean >  0.75
-|   |--- class: LatPulldown
+|   |--- y_out_fir_rescale_mean >  0.61
+|   |   |--- class: LatPulldown
+|--- gyro_x_fir_rescale_variance >  16.62
+|   |--- class: BicepCurl
 
 
 Training report: 
@@ -25,8 +25,8 @@ Training report:
    macro avg       1.00      1.00      1.00     35478
 weighted avg       1.00      1.00      1.00     35478
 
-Training accuracy scores (cross-validated over 5 splits): 1.0 1.0 0.999859075535513 1.0 1.0
-Average training accuracy: 1.0000 +/- 0.0001
+Training accuracy scores (cross-validated over 5 splits): 0.9995772266065389 1.0 1.0 1.0 1.0
+Average training accuracy: 0.9999 +/- 0.0002
 
 Test report: 
 -------------------------------------------------------------------------------
