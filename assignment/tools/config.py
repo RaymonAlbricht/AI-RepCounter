@@ -20,8 +20,8 @@ BAUDRATE = 115200
 
 # TODO Set feature calculation parameters
 #      Valid BLOCK_TYPE values are: BLOCK or SLIDING
-BLOCK_SIZE = 100
-BLOCK_TYPE = 'BLOCK'
+BLOCK_SIZE = 175
+BLOCK_TYPE = 'SLIDING'
 
 
 # Directory paths. The data directory is located relative to this file

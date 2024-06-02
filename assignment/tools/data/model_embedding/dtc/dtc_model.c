@@ -1,8 +1,8 @@
 typedef enum
 {
-    Bicepcurl = 0,
-    Chestpress = 1,
-    Latpulldown = 2,
+    BicepCurl = 0,
+    ChestPress = 1,
+    LatPulldown = 2,
     Stationary = 3,
 }dtc_t;
 
@@ -10,40 +10,40 @@ typedef enum
  * \brief Decision tree classifier
  * 
  * Decision tree classifier based on the following input characteristics:
- *   BLOCK_SIZE: 100
- *   BLOCK_TYPE: BLOCK
+ *   BLOCK_SIZE: 175
+ *   BLOCK_TYPE: SLIDING
  * 
  * \return dtc_t
- *   0  Bicepcurl
- *   1  Chestpress
- *   2  Latpulldown
+ *   0  BicepCurl
+ *   1  ChestPress
+ *   2  LatPulldown
  *   3  Stationary
  */
-dtc_t dtc(const float y_out_fir_rescale_max, const float z_out_fir_rescale_max)
+dtc_t dtc(const float y_out_fir_rescale_mean, const float z_out_fir_rescale_min, const float z_out_fir_rescale_max)
 {
     dtc_t ret;
 
-    if(y_out_fir_rescale_max <= 0.014531f)
+    if(y_out_fir_rescale_mean <= 0.754241f)
     {
-         ret = Stationary;
+        if(z_out_fir_rescale_min <= -0.606537f)
+        {
+             ret = BicepCurl;
+        }
+        else // z_out_fir_rescale_min > -0.606537f
+        {
+            if(z_out_fir_rescale_max <= 0.843368f)
+            {
+                 ret = Stationary;
+            }
+            else // z_out_fir_rescale_max > 0.843368f
+            {
+                 ret = ChestPress;
+            }
+        }
     }
-    else // y_out_fir_rescale_max > 0.014531f
+    else // y_out_fir_rescale_mean > 0.754241f
     {
-        if(z_out_fir_rescale_max <= 0.788158f)
-        {
-            if(y_out_fir_rescale_max <= 0.945533f)
-            {
-                 ret = Bicepcurl;
-            }
-            else // y_out_fir_rescale_max > 0.945533f
-            {
-                 ret = Latpulldown;
-            }
-        }
-        else // z_out_fir_rescale_max > 0.788158f
-        {
-             ret = Chestpress;
-        }
+         ret = LatPulldown;
     }
 
     return ret;

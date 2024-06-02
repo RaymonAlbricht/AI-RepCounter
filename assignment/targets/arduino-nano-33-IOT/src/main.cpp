@@ -37,8 +37,10 @@
 #include <stdbool.h>
 #include "features.h"
 
-#define BLOCK_SIZE 100
+#define BLOCK_SIZE 175
 #define NUMBER_OF_COEFS 8
+
+int n = 0;
 
 float x, y, z;
 float acceleration_mg[3] = {0};
@@ -56,54 +58,57 @@ uint32_t ms2 = 0;
 
 typedef enum
 {
-    Bicepcurl = 0,
-    Chestpress = 1,
-    Latpulldown = 2,
+    BicepCurl = 0,
+    ChestPress = 1,
+    LatPulldown = 2,
     Stationary = 3,
-} dtc_t;
+}dtc_t;
 
 /*
  * \brief Decision tree classifier
  * 
  * Decision tree classifier based on the following input characteristics:
- *   BLOCK_SIZE: 100
- *   BLOCK_TYPE: BLOCK
+ *   BLOCK_SIZE: 175
+ *   BLOCK_TYPE: SLIDING
  * 
  * \return dtc_t
- *   0  Bicepcurl
- *   1  Chestpress
- *   2  Latpulldown
+ *   0  BicepCurl
+ *   1  ChestPress
+ *   2  LatPulldown
  *   3  Stationary
  */
-dtc_t dtc(const float y_out_fir_rescale_max, const float z_out_fir_rescale_max)
+dtc_t dtc(const float y_out_fir_rescale_mean, const float z_out_fir_rescale_min, const float z_out_fir_rescale_max)
 {
     dtc_t ret;
 
-    if (y_out_fir_rescale_max <= 0.014531f)
+    if(y_out_fir_rescale_mean <= 0.754241f)
     {
-        ret = Stationary;
+        if(z_out_fir_rescale_min <= -0.606537f)
+        {
+             ret = BicepCurl;
+        }
+        else // z_out_fir_rescale_min > -0.606537f
+        {
+            if(z_out_fir_rescale_max <= 0.843368f)
+            {
+                 ret = Stationary;
+            }
+            else // z_out_fir_rescale_max > 0.843368f
+            {
+                 ret = ChestPress;
+            }
+        }
     }
-    else // y_out_fir_rescale_max > 0.014531f
+    else // y_out_fir_rescale_mean > 0.754241f
     {
-        if (z_out_fir_rescale_max <= 0.788158f)
-        {
-            if (y_out_fir_rescale_max <= 0.945533f)
-            {
-                ret = Bicepcurl;
-            }
-            else // y_out_fir_rescale_max > 0.945533f
-            {
-                ret = Latpulldown;
-            }
-        }
-        else // z_out_fir_rescale_max > 0.788158f
-        {
-            ret = Chestpress;
-        }
+         ret = LatPulldown;
     }
 
     return ret;
 }
+
+
+
 
 float fir(const float data, const float *coefs, float *x, const uint32_t n)
 {
@@ -140,13 +145,24 @@ float max(float *data, const uint32_t n)
     return max;
 }
 
+float min(float *data, const uint32_t n)
+{
+    float min = data[0];
+
+    for(uint32_t i=1; i<n; ++i)
+    {
+        min = (data[i] < min) ? data[i] : min;
+    }
+
+    return min;
+}
+
 
 void setup()
 {
     pinMode(LED_BUILTIN, OUTPUT);
     digitalWrite(LED_BUILTIN, HIGH);
     Serial.begin(115200);
-    // delay(1000);
     while (!Serial)
         ;
     Serial.println("Initializing sensors\n");
@@ -168,67 +184,62 @@ void loop()
     if (IMU.accelerationAvailable())
     {
         // Set initial timestamp
-        ms1 = millis();
         IMU.readAcceleration(x, y, z);
-        for(int i = 0; i<=BLOCK_SIZE; i++){
-          IMU.readAcceleration(x, y, z);
-          x_buffer[i] = x * 1000.0;
-          y_buffer[i] = y * 1000.0;
-          z_buffer[i] = z * 1000.0;
 
-          x_buffer[i] = fir(x_buffer[i], coefs, fir_x, NUMBER_OF_COEFS);
+    // Buffer full?
+    if (n >= BLOCK_SIZE)
+    {
+      
+      memmove(&x_buffer[0], &x_buffer[1], sizeof(float) * (BLOCK_SIZE - 1));
+      memmove(&y_buffer[0], &y_buffer[1], sizeof(float) * (BLOCK_SIZE - 1));
+      memmove(&z_buffer[0], &z_buffer[1], sizeof(float) * (BLOCK_SIZE - 1));
+ 
+      n = BLOCK_SIZE - 1; // Reset counter at the end of the buffer
+    }
+
+    y_buffer[n]= y;
+    z_buffer[n]= z;
+
+    n++;
+
+    if (n >= BLOCK_SIZE){
+
+    for(int i = 0; i <= BLOCK_SIZE; i++){
+          //x_buffer[i] = fir(x_buffer[i], coefs, fir_x, NUMBER_OF_COEFS);
           y_buffer[i] = fir(y_buffer[i], coefs, fir_y, NUMBER_OF_COEFS);
           z_buffer[i] = fir(z_buffer[i], coefs, fir_z, NUMBER_OF_COEFS);
 
-          float y_result = max(y_buffer,BLOCK_SIZE);
-          float z_result = max(z_buffer,BLOCK_SIZE);
+          //x_buffer[i] = normalize(x_buffer[i],-1,1);
+          y_buffer[i] = normalize(y_buffer[i],-1,1);
+          z_buffer[i] = normalize(z_buffer[i],-1,1);
+    }
 
-          x_buffer[i] = normalize(x_buffer[i],-1,1);
-          y_result = normalize(y_result,-1,1);
-          z_result = normalize(z_result,-1,1);
-        }
+          float y_result = mean(y_buffer,BLOCK_SIZE);
+          float z_min_result = min(z_buffer,BLOCK_SIZE);
+          float z_max_result = max(z_buffer,BLOCK_SIZE);
 
-        float y_result = max(y_buffer,BLOCK_SIZE);
-        float z_result = max(z_buffer,BLOCK_SIZE);
-        // peak_to_peak(y_buffer,BLOCK_SIZE);
-        // peak_to_peak(z_buffer,BLOCK_SIZE);
-
-        int label = dtc(y_result,z_result);
+           int label = dtc(y_result,z_min_result, z_max_result);
 
         char* label_str;
-        // Usethecalculated label forfurther processing
+        // Use the calculated label forfurther processing
         if(label == 0)
         {
-          label_str="Bicepcurl";
+          label_str="BicepCurl";
         }
         else if(label == 1)
         {
-          label_str="Chestpress";
+          label_str="ChestPress";
         }
         else if(label == 2)
         {
-          label_str="Latpulldown";
+          label_str="LatPulldown";
         }
         else if(label == 3)
         {
           label_str="Stationary";
         }
 
-       // Set final timestamp
-      ms2 = millis();
-      // Print duration and label
-    Serial.print(ms1);
-    Serial.print(',');
-    Serial.print(ms2);
-    Serial.print(',');
-    Serial.println(label_str);        
-
-        // TODO Implement filter functions as required by the application. FIR FILTER IMPLEMENTEREN
-
-        // TODO Implement normalization functions as required by the
-        //      application.    NORMALIZATION IMPLEMENTEREN
-
-        // TODO Finish this example by designing an ML model and implement the
-        //      generated C code. PEAK TO PEAK AND MAX
+    Serial.println(label_str);
+    }
     }
 }

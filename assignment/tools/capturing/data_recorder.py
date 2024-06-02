@@ -31,7 +31,7 @@ import serial
 
 # TODO Set the label for the recording here. Alternatively, use the command
 #      line -l option
-LABEL_NAME = 'Stationary'
+LABEL_NAME = 'LatPulldown'
 
 # TODO Set the attribute names from the microcontroller data here.
 #      These attributes are application dependent! The attributes correspond
@@ -39,7 +39,7 @@ LABEL_NAME = 'Stationary'
 ATTRIBUTE_NAMES = ['x_out','y_out','z_out']
 
 # TODO Set number of samples (or press CTRL+C to abort)
-N_SAMPLES = 1000
+N_SAMPLES = 12000
 
 def main():
     print("Press CTRL+C to quit")
